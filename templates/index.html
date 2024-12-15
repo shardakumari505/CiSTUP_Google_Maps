@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Route Finder</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+    }
+    label {
+      display: block;
+      margin-top: 10px;
+    }
+    input {
+      padding: 5px;
+      margin-top: 5px;
+    }
+    button {
+      margin-top: 15px;
+      padding: 10px 15px;
+      background-color: #007BFF;
+      color: white;
+      border: none;
+      cursor: pointer;
+      border-radius: 5px;
+    }
+    button:hover {
+      background-color: #0056b3;
+    }
+    .output {
+      margin-top: 20px;
+      padding: 15px;
+      background-color: #f8f9fa;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+    }
+    .error {
+      color: red;
+    }
+  </style>
+</head>
+<body>
+  <h1>Route Finder</h1>
+
+  <form id="routeForm">
+    <label for="origin_lat">Origin Latitude:</label>
+    <input type="number" id="origin_lat" name="origin_lat" step="any" required>
+
+    <label for="origin_lon">Origin Longitude:</label>
+    <input type="number" id="origin_lon" name="origin_lon" step="any" required>
+
+    <label for="destination_lat">Destination Latitude:</label>
+    <input type="number" id="destination_lat" name="destination_lat" step="any" required>
+
+    <label for="destination_lon">Destination Longitude:</label>
+    <input type="number" id="destination_lon" name="destination_lon" step="any" required>
+
+    <button type="button" onclick="fetchRoute()">Get Route</button>
+  </form>
+
+  <div class="output" id="output" style="display: none;">
+    <h3>Request Data</h3>
+    <p id="requestData"></p>
+
+    <h3>Response Data</h3>
+    <p id="responseData"></p>
+  </div>
+
+  <script>
+    async function fetchRoute() {
+      const form = document.getElementById('routeForm');
+      const originLat = form.origin_lat.value;
+      const originLon = form.origin_lon.value;
+      const destinationLat = form.destination_lat.value;
+      const destinationLon = form.destination_lon.value;
+
+      const output = document.getElementById('output');
+      const requestData = document.getElementById('requestData');
+      const responseData = document.getElementById('responseData');
+
+      output.style.display = 'none';
+
+      try {
+        // Display the request data
+        const requestDetails = `
+          Origin Latitude: ${originLat}<br>
+          Origin Longitude: ${originLon}<br>
+          Destination Latitude: ${destinationLat}<br>
+          Destination Longitude: ${destinationLon}
+        `;
+        requestData.innerHTML = requestDetails;
+
+        // Fetch the route from the API
+        const response = await fetch(`/get-route?origin_lat=${originLat}&origin_lon=${originLon}&destination_lat=${destinationLat}&destination_lon=${destinationLon}`);
+        const data = await response.json();
+
+        // Display the response data
+        if (response.ok) {
+          responseData.innerHTML = `<pre>${JSON.stringify(data, null, 2)}</pre>`;
+        } else {
+          responseData.innerHTML = `<span class="error">Error: ${data.error || "Unable to fetch the route."}</span>`;
+        }
+
+        output.style.display = 'block';
+      } catch (error) {
+        responseData.innerHTML =`<span class="error">Error: ${error.message}</span>`;
+        output.style.display = 'block';
+      }
+    }
+  </script>
+</body>
+</html>
