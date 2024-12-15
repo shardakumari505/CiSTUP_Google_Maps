@@ -68,7 +68,7 @@ def get_route():
 
     except Exception as e:
         print(f"Error in get_route: {e}")
-        return jsonify({"error": str(e)}), 500
+        return jsonify({"errorr": str(e)}), 500
 
 @app.route('/')
 def home():
